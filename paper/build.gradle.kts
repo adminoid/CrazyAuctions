@@ -18,6 +18,12 @@ repositories {
 }
 
 dependencies {
+    implementation(
+        files(
+            "libs/VaultAPI-1.7.jar"
+        )
+    )
+
     implementation(libs.vital.paper) {
         exclude("org.yaml")
     }

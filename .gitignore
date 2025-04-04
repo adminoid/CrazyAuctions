@@ -9,3 +9,5 @@ buildSrc/build
 run
 
 jars
+
+/paper/libs

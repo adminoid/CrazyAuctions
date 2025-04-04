@@ -35,13 +35,13 @@ public class CrazyAuctions extends Vital {
 
     @Override
     public void onEnable() {
-        if (!getServer().getPluginManager().isPluginEnabled("Vault")) {
-            getLogger().severe("Vault was not found so the plugin will now disable.");
-
-            getServer().getPluginManager().disablePlugin(this);
-
-            return;
-        }
+//        if (!getServer().getPluginManager().isPluginEnabled("Vault")) {
+//            getLogger().severe("Vault was not found so the plugin will now disable.");
+//
+//            getServer().getPluginManager().disablePlugin(this);
+//
+//            return;
+//        }
 
         getFileManager().addFile("config.yml")
                 .addFile("data.yml")
