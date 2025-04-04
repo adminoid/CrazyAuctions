@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+
 public class VaultSupport {
 
     private final CrazyAuctions plugin = CrazyAuctions.get();
@@ -26,26 +28,26 @@ public class VaultSupport {
         return this.vault != null;
     }
 
-    public long getMoney(@NotNull Player player) {
-        return (long) this.vault.getBalance(player);
+    public BigDecimal getMoney(@NotNull Player player) {
+        return (BigDecimal) this.vault.getBalance(player);
     }
 
-    public boolean removeMoney(@NotNull Player player, long amount) {
+    public boolean removeMoney(@NotNull Player player, BigDecimal amount) {
         EconomyResponse result = this.vault.withdrawPlayer(player, amount);
         return result.transactionSuccess();
     }
 
-    public boolean removeMoney(@NotNull OfflinePlayer player, long amount) {
+    public boolean removeMoney(@NotNull OfflinePlayer player, BigDecimal amount) {
         EconomyResponse result = this.vault.withdrawPlayer(player, amount);
         return result.transactionSuccess();
     }
 
-    public boolean addMoney(Player player, long amount) {
+    public boolean addMoney(Player player, BigDecimal amount) {
         EconomyResponse result = this.vault.depositPlayer(player, amount);
         return result.transactionSuccess();
     }
 
-    public boolean addMoney(OfflinePlayer player, long amount) {
+    public boolean addMoney(OfflinePlayer player, BigDecimal amount) {
         EconomyResponse result = this.vault.depositPlayer(player, amount);
         return result.transactionSuccess();
     }

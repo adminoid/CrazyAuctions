@@ -7,6 +7,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author BadBones69
@@ -18,7 +20,7 @@ public class AuctionListEvent extends Event {
     
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
-    private final long price;
+    private final BigDecimal price;
     private final ShopType shop;
     private final ItemStack item;
     
@@ -29,7 +31,7 @@ public class AuctionListEvent extends Event {
      * @param item The item being listed.
      * @param price The price the item is being listed for.
      */
-    public AuctionListEvent(Player player, ShopType shop, ItemStack item, long price) {
+    public AuctionListEvent(Player player, ShopType shop, ItemStack item, BigDecimal price) {
         this.player = player;
         this.shop = shop;
         this.item = item;
@@ -56,7 +58,7 @@ public class AuctionListEvent extends Event {
         return this.item;
     }
     
-    public long getPrice() {
+    public BigDecimal getPrice() {
         return this.price;
     }
 }

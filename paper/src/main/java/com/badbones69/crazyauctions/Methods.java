@@ -10,9 +10,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.apache.commons.lang3.compare.ComparableUtils.is;
 
 public class Methods {
 
@@ -280,10 +284,10 @@ public class Methods {
 
                     for (; data.contains("OutOfTime/Cancelled." + num); num++) ;
 
-                    if (data.getBoolean("Items." + i + ".Biddable") && !data.getString("Items." + i + ".TopBidder").equalsIgnoreCase("None") && plugin.getSupport().getMoney(getPlayer(data.getString("Items." + i + ".TopBidder"))) >= data.getInt("Items." + i + ".Price")) {
+                    if (data.getBoolean("Items." + i + ".Biddable") && !data.getString("Items." + i + ".TopBidder").equalsIgnoreCase("None") && is(plugin.getSupport().getMoney(getPlayer(data.getString("Items." + i + ".TopBidder")))).greaterThanOrEqualTo(new BigDecimal(data.getString("Items." + i + ".Price")))) {
                         String winner = data.getString("Items." + i + ".TopBidder");
                         String seller = data.getString("Items." + i + ".Seller");
-                        long price = data.getLong("Items." + i + ".Price");
+                        BigDecimal price = new BigDecimal(data.getLong("Items." + i + ".Price"));
 
                         plugin.getSupport().addMoney(getOfflinePlayer(seller), price);
                         plugin.getSupport().removeMoney(getOfflinePlayer(winner), price);

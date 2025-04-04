@@ -6,6 +6,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author BadBones69
@@ -17,7 +19,7 @@ public class AuctionWinBidEvent extends Event {
     
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
-    private final long bid;
+    private final BigDecimal bid;
     private final ItemStack item;
     
     /**
@@ -26,7 +28,7 @@ public class AuctionWinBidEvent extends Event {
      * @param item The item that was won.
      * @param bid The bid that was placed on the item.
      */
-    public AuctionWinBidEvent(Player player, ItemStack item, long bid) {
+    public AuctionWinBidEvent(Player player, ItemStack item, BigDecimal bid) {
         this.player = player;
         this.item = item;
         this.bid = bid;
@@ -48,7 +50,7 @@ public class AuctionWinBidEvent extends Event {
         return this.item;
     }
     
-    public long getBid() {
+    public BigDecimal getBid() {
         return this.bid;
     }
 }

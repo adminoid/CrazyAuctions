@@ -18,10 +18,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.jetbrains.annotations.NotNull;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static org.apache.commons.lang3.compare.ComparableUtils.is;
 
 public class AuctionCommand implements CommandExecutor {
 
@@ -204,7 +208,7 @@ public class AuctionCommand implements CommandExecutor {
                             if (amount > item.getAmount()) amount = item.getAmount();
                         }
 
-                        if (!Methods.isLong(args[1])) {
+                        if (!is(new BigDecimal(args[1])).greaterThanOrEqualTo(new BigDecimal(0))) {
                             Map<String, String> placeholders = new HashMap<>();
                             placeholders.put("%Arg%", args[1]);
                             placeholders.put("%arg%", args[1]);
@@ -220,27 +224,27 @@ public class AuctionCommand implements CommandExecutor {
                             return false;
                         }
 
-                        long price = Long.parseLong(args[1]);
+                        BigDecimal price = new BigDecimal(args[1]);
 
                         if (args[0].equalsIgnoreCase("bid")) {
-                            if (price < config.getLong("Settings.Minimum-Bid-Price", 100)) {
+                            if (is(price).lessThan(new BigDecimal(config.getString("Settings.Minimum-Bid-Price", "0.000000001")))) {
                                 player.sendMessage(Messages.BID_PRICE_TO_LOW.getMessage(sender));
 
                                 return true;
                             }
 
-                            if (price > config.getLong("Settings.Max-Beginning-Bid-Price", 1000000)) {
+                            if (is(price).greaterThan(new BigDecimal(config.getString("Settings.Max-Beginning-Bid-Price", "10000000")))) {
                                 player.sendMessage(Messages.BID_PRICE_TO_HIGH.getMessage(sender));
 
                                 return true;
                             }
                         } else {
-                            if (price < config.getLong("Settings.Minimum-Sell-Price", 10)) {
+                            if (is(price).lessThan(new BigDecimal(config.getString("Settings.Minimum-Sell-Price", "0.1")))) {
                                 player.sendMessage(Messages.SELL_PRICE_TO_LOW.getMessage(sender));
 
                                 return true;
                             }
-                            if (price > config.getLong("Settings.Max-Beginning-Sell-Price", 1000000)) {
+                            if (is(price).greaterThan(new BigDecimal(config.getString("Settings.Max-Beginning-Sell-Price", "10000000")))) {
                                 player.sendMessage(Messages.SELL_PRICE_TO_HIGH.getMessage(sender));
 
                                 return true;

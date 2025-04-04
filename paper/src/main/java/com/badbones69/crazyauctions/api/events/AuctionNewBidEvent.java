@@ -6,6 +6,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+
 /**
  *
  * This event is fired when a player places a new bid onto an item in the auction house.
@@ -14,7 +16,7 @@ public class AuctionNewBidEvent extends Event {
     
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
-    private final long bid;
+    private final BigDecimal bid;
     private final ItemStack item;
     
     /**
@@ -23,7 +25,7 @@ public class AuctionNewBidEvent extends Event {
      * @param item The item that was bid on.
      * @param bid The amount of money that was bid.
      */
-    public AuctionNewBidEvent(Player player, ItemStack item, long bid) {
+    public AuctionNewBidEvent(Player player, ItemStack item, BigDecimal bid) {
         this.player = player;
         this.item = item;
         this.bid = bid;
@@ -45,7 +47,7 @@ public class AuctionNewBidEvent extends Event {
         return this.item;
     }
     
-    public long getBid() {
+    public BigDecimal getBid() {
         return this.bid;
     }
 }

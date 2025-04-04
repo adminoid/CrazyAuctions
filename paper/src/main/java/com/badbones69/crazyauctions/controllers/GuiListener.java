@@ -27,6 +27,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +36,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.compare.ComparableUtils.is;
+
 public class GuiListener implements Listener {
 
     private static final CrazyAuctions plugin = CrazyAuctions.get();
     private static final CrazyManager crazyManager = plugin.getCrazyManager();
 
-    private static final Map<UUID, Integer> bidding = new HashMap<>();
+    private static final Map<UUID, BigDecimal> bidding = new HashMap<>();
     private static final Map<UUID, String> biddingID = new HashMap<>();
     private static final Map<UUID, ShopType> shopType = new HashMap<>(); // Shop Type
     private static final Map<UUID, Category> shopCategory = new HashMap<>(); // Category Type
@@ -496,7 +500,7 @@ public class GuiListener implements Listener {
 
         Inventory inv = plugin.getServer().createInventory(null, 27, Methods.color(config.getString("Settings.Bidding-On-Item")));
 
-        if (!bidding.containsKey(player.getUniqueId())) bidding.put(player.getUniqueId(), 0);
+        if (!bidding.containsKey(player.getUniqueId())) bidding.put(player.getUniqueId(), new BigDecimal(0));
 
         inv.setItem(9, new ItemBuilder().setMaterial(Material.LIME_STAINED_GLASS_PANE).setName("&a+1").setAmount(1).build());
         inv.setItem(10, new ItemBuilder().setMaterial(Material.LIME_STAINED_GLASS_PANE).setName("&a+10").setAmount(1).build());
@@ -639,7 +643,7 @@ public class GuiListener implements Listener {
 
         ItemBuilder itemBuilder = new ItemBuilder().setMaterial(id).setName(name).setAmount(1);
 
-        int bid = bidding.get(player.getUniqueId());
+        BigDecimal bid = bidding.get(player.getUniqueId());
 
         String price = Methods.getPrice(ID, false);
 
@@ -785,27 +789,28 @@ public class GuiListener implements Listener {
                             if (item.getItemMeta().hasDisplayName()) {
                                 if (item.getItemMeta().getDisplayName().equals(Methods.color(config.getString("Settings.GUISettings.OtherSettings.Bid.Name")))) {
                                     String ID = biddingID.get(player.getUniqueId());
-                                    int bid = bidding.get(player.getUniqueId());
+                                    BigDecimal bid = bidding.get(player.getUniqueId());
                                     String topBidder = data.getString("Items." + ID + ".TopBidder");
 
-                                    if (plugin.getSupport().getMoney(player) < bid) {
+                                    if (is(plugin.getSupport().getMoney(player)).lessThan(bid)) {
                                         Map<String, String> placeholders = new HashMap<>();
 
-                                        placeholders.put("%Money_Needed%", (bid - plugin.getSupport().getMoney(player)) + "");
-                                        placeholders.put("%money_needed%", (bid - plugin.getSupport().getMoney(player)) + "");
+                                        placeholders.put("%Money_Needed%", (bid.subtract(plugin.getSupport().getMoney(player))) + "");
+                                        placeholders.put("%money_needed%", (bid.subtract(plugin.getSupport().getMoney(player))) + "");
 
                                         player.sendMessage(Messages.NEED_MORE_MONEY.getMessage(player, placeholders));
 
                                         return;
                                     }
 
-                                    if (data.getLong("Items." + ID + ".Price") > bid) {
+                                    if (is(new BigDecimal(data.getString("Items." + ID + ".Price"))).greaterThan(bid)) {
                                         player.sendMessage(Messages.BID_MORE_MONEY.getMessage(player));
 
                                         return;
                                     }
 
-                                    if (data.getLong("Items." + ID + ".Price") >= bid && !topBidder.equalsIgnoreCase("None")) {
+//                                    if (new BigDecimal(data.getString("Items." + ID + ".Price")) >= bid && !topBidder.equalsIgnoreCase("None")) {
+                                    if (is(new BigDecimal(data.getString("Items." + ID + ".Price"))).greaterThanOrEqualTo(bid) && !topBidder.equalsIgnoreCase("None")) {
                                         player.sendMessage(Messages.BID_MORE_MONEY.getMessage(player));
 
                                         return;
@@ -824,26 +829,27 @@ public class GuiListener implements Listener {
 
                                     Files.data.save();
 
-                                    bidding.put(player.getUniqueId(), 0);
+                                    bidding.put(player.getUniqueId(), new BigDecimal(0));
                                     player.closeInventory();
                                     playClick(player);
                                     return;
                                 }
 
-                                Map<String, Integer> priceEdits = new HashMap<>();
-                                priceEdits.put("&a+1", 1);
-                                priceEdits.put("&a+10", 10);
-                                priceEdits.put("&a+100", 100);
-                                priceEdits.put("&a+1000", 1000);
-                                priceEdits.put("&c-1", -1);
-                                priceEdits.put("&c-10", -10);
-                                priceEdits.put("&c-100", -100);
-                                priceEdits.put("&c-1000", -1000);
+                                Map<String, BigDecimal> priceEdits = new HashMap<>();
+                                priceEdits.put("&a+1", new BigDecimal(1));
+                                priceEdits.put("&a+10", new BigDecimal(10));
+                                priceEdits.put("&a+100", new BigDecimal(100));
+                                priceEdits.put("&a+1000", new BigDecimal(1000));
+                                priceEdits.put("&c-1", new BigDecimal(-1));
+                                priceEdits.put("&c-10", new BigDecimal(-10));
+                                priceEdits.put("&c-100", new BigDecimal(-100));
+                                priceEdits.put("&c-1000", new BigDecimal(-1000));
 
                                 for (String price : priceEdits.keySet()) {
                                     if (item.getItemMeta().getDisplayName().equals(Methods.color(price))) {
                                         try {
-                                            bidding.put(player.getUniqueId(), (bidding.get(player.getUniqueId()) + priceEdits.get(price)));
+//                                            bidding.put(player.getUniqueId(), (bidding.get(player.getUniqueId()) + priceEdits.get(price)));
+                                            bidding.put(player.getUniqueId(), ((bidding.get(player.getUniqueId())).add(priceEdits.get(price))));
 
                                             inv.setItem(4, getBiddingItem(biddingID.get(player.getUniqueId())));
 
@@ -1045,9 +1051,9 @@ public class GuiListener implements Listener {
                                                     return;
                                                 }
 
-                                                long cost = data.getLong("Items." + i + ".Price");
+                                                BigDecimal cost = new BigDecimal(data.getString("Items." + i + ".Price"));
 
-                                                if (plugin.getSupport().getMoney(player) < cost) {
+                                                if (is(plugin.getSupport().getMoney(player)).lessThan(cost)) {
                                                     String itemName = config.getString("Settings.GUISettings.OtherSettings.Cant-Afford.Item");
                                                     String name = config.getString("Settings.GUISettings.OtherSettings.Cant-Afford.Name");
 
@@ -1139,7 +1145,7 @@ public class GuiListener implements Listener {
                             if (item.getItemMeta().hasDisplayName()) {
                                 if (item.getItemMeta().getDisplayName().equals(Methods.color(config.getString("Settings.GUISettings.OtherSettings.Confirm.Name")))) {
                                     String ID = IDs.get(player.getUniqueId());
-                                    long cost = data.getLong("Items." + ID + ".Price");
+                                    BigDecimal cost = new BigDecimal(data.getString("Items." + ID + ".Price"));
                                     String seller = data.getString("Items." + ID + ".Seller");
 
                                     if (!data.contains("Items." + ID)) {
@@ -1165,13 +1171,13 @@ public class GuiListener implements Listener {
 
                                     Map<String, String> placeholders = new HashMap<>();
 
-                                    if (support.getMoney(player) < cost) {
+                                    if (is(support.getMoney(player)).lessThan(cost)) {
                                         playClick(player);
 
                                         player.closeInventory();
 
-                                        placeholders.put("%Money_Needed%", (cost - plugin.getSupport().getMoney(player)) + "");
-                                        placeholders.put("%money_needed%", (cost - plugin.getSupport().getMoney(player)) + "");
+                                        placeholders.put("%Money_Needed%", (cost.subtract(plugin.getSupport().getMoney(player))) + "");
+                                        placeholders.put("%money_needed%", (cost.subtract(plugin.getSupport().getMoney(player))) + "");
 
                                         player.sendMessage(Messages.NEED_MORE_MONEY.getMessage(player, placeholders));
 
@@ -1187,8 +1193,8 @@ public class GuiListener implements Listener {
 
                                         player.closeInventory();
 
-                                        placeholders.put("%Money_Needed%", (cost - support.getMoney(player)) + "");
-                                        placeholders.put("%money_needed%", (cost - support.getMoney(player)) + "");
+                                        placeholders.put("%Money_Needed%", (cost.subtract(support.getMoney(player))) + "");
+                                        placeholders.put("%money_needed%", (cost.subtract(support.getMoney(player))) + "");
 
                                         player.sendMessage(Messages.NEED_MORE_MONEY.getMessage(player, placeholders));
 
