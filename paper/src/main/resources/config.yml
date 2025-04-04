@@ -1,6 +1,6 @@
 Settings:
-  Prefix: '&7[&4Crazy &bAuctions&7]: ' #Prefix of when you get Crazy Auctions Messages.
-  GUIName: '&4Crazy &bAuctions&8' #Name of the Main GUI.
+  Prefix: '&7[&bAuctions&7]: ' #Prefix of when you get Crazy Auctions Messages.
+  GUIName: '&bAuctions&8' #Name of the Main GUI.
   Players-Current-Items: '&8Your Current Listings' #The Name of the Player Current Items GUI.
   Cancelled/Expired-Items: '&8Canceled/Expired Listings' #Name of the Cancelled/Expired GUI.
   Buying-Item: '&8Purchase Item: Are You Sure?' #Name of the Buying GUI.
@@ -10,9 +10,9 @@ Settings:
   Bid-Time: 2m 30s #Time for each item that is biddable.
   Full-Expire-Time: 10d #The full time the item is in the crazy auctions.
   Bid-Winner-Time: 20d #The time the winner of a bid has to claim their prize.
-  Minimum-Sell-Price: 10 #Minimum amount you can sell an item for.
+  Minimum-Sell-Price: 0.000000001 #Minimum amount you can sell an item for.
   Max-Beginning-Sell-Price: 1000000 #Max amount you can sell an item for.
-  Minimum-Bid-Price: 100 #Minimum starting bid.
+  Minimum-Bid-Price: 0.000000002 #Minimum starting bid.
   Max-Beginning-Bid-Price: 1000000 #Maximum starting bid.
   Allow-Damaged-Items: false #Allow items that have been damaged.
   Category-Page-Opens-First: false #If set to true the categories' page will open when they do /CA.
@@ -31,14 +31,14 @@ Settings:
       - '&7-------------------------'
       - '&aClick here to purchase.'
       - ''
-      - '&9Price: &e$%price%'
+      - '&9Price: &e%price% ton'
       - '&9Seller: &e%seller%'
       - '&7-------------------------'
     CurrentLore: #Lore on items that are in your current items GUI.
       - '&7-------------------------'
       - '&aClick here to cancel.'
       - ''
-      - '&9Price: &e$%price%'
+      - '&9Price: &e%price% ton'
       - '&9Expire: &e%time%'
       - '&7-------------------------'
     Cancelled/ExpiredLore: #Lore on items that are in your canceled/expired GUI.

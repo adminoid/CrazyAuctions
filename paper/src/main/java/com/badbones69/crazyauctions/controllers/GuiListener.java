@@ -29,12 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.apache.commons.lang3.compare.ComparableUtils.is;
 
@@ -71,57 +66,60 @@ public class GuiListener implements Listener {
         }
 
         if (data.contains("Items")) {
-            for (String i : data.getConfigurationSection("Items").getKeys(false)) {
+            for (String i : Objects.requireNonNull(data.getConfigurationSection("Items")).getKeys(false)) {
                 ItemBuilder itemBuilder = ItemBuilder.convertItemStack(data.getString("Items." + i + ".Item"));
 
                 List<String> lore = new ArrayList<>(itemBuilder.getUpdatedLore());
 
-                if (itemBuilder != null && data.contains("Items." + i + ".Item") && (cat.getItems().contains(itemBuilder.getItemStack().getType()) || cat == Category.NONE)) {
-                    if (data.getBoolean("Items." + i + ".Biddable")) {
-                        if (sell == ShopType.BID) {
-                            String sellerName = data.getString("Items." + i + ".SellerName");
+                if (data.contains("Items." + i + ".Item")) {
+                    assert cat != null;
+                    if (cat.getItems().contains(itemBuilder.getItemStack().getType()) || cat == Category.NONE) {
+                        if (data.getBoolean("Items." + i + ".Biddable")) {
+                            if (sell == ShopType.BID) {
+                                String sellerName = data.getString("Items." + i + ".SellerName");
 
-                            String price = Methods.getPrice(i, false);
-                            String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
+                                String price = Methods.getPrice(i, false);
+                                String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
 
-                            String topBidderName = data.getString("Items." + i + ".TopBidderName");
+                                String topBidderName = data.getString("Items." + i + ".TopBidderName");
 
-                            for (String key : config.getStringList("Settings.GUISettings.Bidding")) {
-                                String line = key.replace("%TopBid%", price).replace("%topbid%", price);
+                                for (String key : config.getStringList("Settings.GUISettings.Bidding")) {
+                                    String line = key.replace("%TopBid%", price).replace("%topbid%", price);
 
-                                line = sellerName != null ? line.replace("%Seller%", sellerName).replace("%seller%", sellerName) : line.replace("%Seller%", "N/A").replace("%seller%", "N/A");
+                                    line = sellerName != null ? line.replace("%Seller%", sellerName).replace("%seller%", sellerName) : line.replace("%Seller%", "N/A").replace("%seller%", "N/A");
 
-                                line = topBidderName != null ? line.replace("%TopBidder%", topBidderName).replace("%topbidder%", topBidderName) : line.replace("%TopBidder%", "N/A").replace("%topbidder%", "N/A");
+                                    line = topBidderName != null ? line.replace("%TopBidder%", topBidderName).replace("%topbidder%", topBidderName) : line.replace("%TopBidder%", "N/A").replace("%topbidder%", "N/A");
 
-                                lore.add(line.replace("%Time%", time).replace("%time%", time));
+                                    lore.add(line.replace("%Time%", time).replace("%time%", time));
+                                }
+
+                                itemBuilder.setLore(lore);
+
+                                items.add(itemBuilder.build());
+
+                                ID.add(data.getInt("Items." + i + ".StoreID"));
                             }
+                        } else {
+                            if (sell == ShopType.SELL) {
+                                String sellerName = data.getString("Items." + i + ".SellerName");
 
-                            itemBuilder.setLore(lore);
+                                String price = Methods.getPrice(i, false);
+                                String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
 
-                            items.add(itemBuilder.build());
+                                String format = String.format(Locale.ENGLISH, "%s", new BigDecimal(price));
 
-                            ID.add(data.getInt("Items." + i + ".StoreID"));
-                        }
-                    } else {
-                        if (sell == ShopType.SELL) {
-                            String sellerName = data.getString("Items." + i + ".SellerName");
+                                for (String l : config.getStringList("Settings.GUISettings.SellingItemLore")) {
+                                    lore.add(l.replace("%Price%", format).replace("%price%", format)
+                                            .replace("%Seller%", sellerName != null ? sellerName : "N/A").replace("%seller%", sellerName != null ? sellerName : "N/A")
+                                            .replace("%Time%", time).replace("%time%", time));
+                                }
 
-                            String price = Methods.getPrice(i, false);
-                            String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
+                                itemBuilder.setLore(lore);
 
-                            String format = String.format(Locale.ENGLISH, "%,d", Long.parseLong(price));
+                                items.add(itemBuilder.build());
 
-                            for (String l : config.getStringList("Settings.GUISettings.SellingItemLore")) {
-                                lore.add(l.replace("%Price%", format).replace("%price%", format)
-                                        .replace("%Seller%", sellerName != null ? sellerName : "N/A").replace("%seller%", sellerName != null ? sellerName : "N/A")
-                                        .replace("%Time%", time).replace("%time%", time));
+                                ID.add(data.getInt("Items." + i + ".StoreID"));
                             }
-
-                            itemBuilder.setLore(lore);
-
-                            items.add(itemBuilder.build());
-
-                            ID.add(data.getInt("Items." + i + ".StoreID"));
                         }
                     }
                 }

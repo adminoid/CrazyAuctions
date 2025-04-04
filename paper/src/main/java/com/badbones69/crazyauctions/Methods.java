@@ -347,17 +347,17 @@ public class Methods {
     }
     
     public static String getPrice(String ID, Boolean Expired) {
-        long price = 0L;
+        BigDecimal price = new BigDecimal(0);
 
         FileConfiguration configuration = Files.data.getConfiguration();
 
         if (Expired) {
             if (configuration.contains("OutOfTime/Cancelled." + ID + ".Price")) {
-                price = configuration.getLong("OutOfTime/Cancelled." + ID + ".Price");
+                price = new BigDecimal(Objects.requireNonNull(configuration.getString("OutOfTime/Cancelled." + ID + ".Price")));
             }
         } else {
             if (configuration.contains("Items." + ID + ".Price")) {
-                price = configuration.getLong("Items." + ID + ".Price");
+                price = new BigDecimal(Objects.requireNonNull(configuration.getString("Items." + ID + ".Price")));
             }
         }
 
