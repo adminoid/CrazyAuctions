@@ -31,14 +31,14 @@ Settings:
       - '&7-------------------------'
       - '&aClick here to purchase.'
       - ''
-      - '&9Price: &e%price% ton'
-      - '&9Seller: &e%seller%'
+      - '&2Price: &g%price% ton'
+      - '&0Seller: &e%seller%'
       - '&7-------------------------'
     CurrentLore: #Lore on items that are in your current items GUI.
       - '&7-------------------------'
       - '&aClick here to cancel.'
       - ''
-      - '&9Price: &e%price% ton'
+      - '&9Price: &g%price% ton'
       - '&9Expire: &e%time%'
       - '&7-------------------------'
     Cancelled/ExpiredLore: #Lore on items that are in your canceled/expired GUI.
