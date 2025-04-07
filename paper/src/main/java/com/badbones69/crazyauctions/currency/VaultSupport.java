@@ -1,8 +1,8 @@
 package com.badbones69.crazyauctions.currency;
 
 import com.badbones69.crazyauctions.CrazyAuctions;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
+import com.github.adminoid.vault.economy.Economy;
+import com.github.adminoid.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;

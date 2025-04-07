@@ -18,11 +18,15 @@ repositories {
 }
 
 dependencies {
-    implementation(
-        files(
-            "libs/VaultAPI-1.7.jar"
-        )
-    )
+
+//    implementation(
+//        files(
+//            "libs/VaultAPI-1.7.jar"
+//        )
+//    )
+
+    implementation("com.github.adminoid:VaultAPI:1.7.2-alpha-1")
+//    implementation("com.github.adminoid:VaultAPI:Tag")
 
     implementation(libs.vital.paper) {
         exclude("org.yaml")
