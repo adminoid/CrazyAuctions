@@ -23,6 +23,8 @@ public class VaultSupport {
     public boolean setupEconomy() {
         RegisteredServiceProvider<Economy> serviceProvider = this.plugin.getServer().getServicesManager().getRegistration(Economy.class);
 
+        // todo -- https://www.spigotmc.org/threads/cant-register-vault.285360/
+
         if (serviceProvider != null) this.vault = serviceProvider.getProvider();
 
         return this.vault != null;
