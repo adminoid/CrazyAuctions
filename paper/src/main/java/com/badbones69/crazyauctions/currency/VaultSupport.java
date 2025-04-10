@@ -3,6 +3,7 @@ package com.badbones69.crazyauctions.currency;
 import com.badbones69.crazyauctions.CrazyAuctions;
 import com.github.adminoid.vault.economy.Economy;
 import com.github.adminoid.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -22,8 +23,6 @@ public class VaultSupport {
 
     public boolean setupEconomy() {
         RegisteredServiceProvider<Economy> serviceProvider = this.plugin.getServer().getServicesManager().getRegistration(Economy.class);
-
-        // todo -- https://www.spigotmc.org/threads/cant-register-vault.285360/
 
         if (serviceProvider != null) this.vault = serviceProvider.getProvider();
 
