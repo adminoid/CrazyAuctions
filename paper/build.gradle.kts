@@ -25,7 +25,7 @@ dependencies {
 //        )
 //    )
 
-    implementation("com.github.adminoid:VaultAPI:1.7.2-alpha-3")
+//    implementation("com.github.adminoid:VaultAPI:1.7.2-alpha-3")
 
     implementation(libs.vital.paper) {
         exclude("org.yaml")
