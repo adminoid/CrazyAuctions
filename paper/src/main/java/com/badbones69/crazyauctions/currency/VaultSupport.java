@@ -3,7 +3,6 @@ package com.badbones69.crazyauctions.currency;
 import com.badbones69.crazyauctions.CrazyAuctions;
 import com.github.adminoid.vault.economy.Economy;
 import com.github.adminoid.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
