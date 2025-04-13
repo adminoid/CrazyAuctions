@@ -11,8 +11,9 @@ Settings:
   Full-Expire-Time: 10d #The full time the item is in the crazy auctions.
   Bid-Winner-Time: 20d #The time the winner of a bid has to claim their prize.
   Minimum-Sell-Price: 0.000000001 #Minimum amount you can sell an item for.
+  Auction-List-Fee: 0 # The amount the player has to pay to list an item.
   Max-Beginning-Sell-Price: 1000000 #Max amount you can sell an item for.
-  Minimum-Bid-Price: 0.000000002 #Minimum starting bid.
+  Minimum-Bid-Price: 0.000000001 #Minimum starting bid.
   Max-Beginning-Bid-Price: 1000000 #Maximum starting bid.
   Allow-Damaged-Items: false #Allow items that have been damaged.
   Category-Page-Opens-First: false #If set to true the categories' page will open when they do /CA.
@@ -304,3 +305,5 @@ Settings:
   BlackList:
     - 'BEDROCK'
     - 'END_PORTAL_FRAME'
+  PDC-BlackList:
+    - 'mcmmo:super_ability_boosted'

@@ -7,6 +7,7 @@ import com.badbones69.crazyauctions.api.enums.*;
 import com.badbones69.crazyauctions.api.events.AuctionCancelledEvent;
 import com.badbones69.crazyauctions.api.events.AuctionListEvent;
 import com.badbones69.crazyauctions.controllers.GuiListener;
+import com.badbones69.crazyauctions.currency.VaultSupport;
 import com.ryderbelserion.vital.paper.api.files.FileManager;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -316,6 +318,14 @@ public class AuctionCommand implements CommandExecutor {
                             return true;
                         }
 
+                        List<String> pdcBlacklist = config.getStringList("Settings.PDC-BlackList");
+
+                        if (item.getPersistentDataContainer().getKeys().stream().anyMatch(key -> pdcBlacklist.contains(key.asString()))) {
+                            player.sendMessage(Messages.ITEM_BLACKLISTED.getMessage(sender));
+
+                            return true;
+                        }
+
                         if (!config.getBoolean("Settings.Allow-Damaged-Items", false)) {
                             for (Material i : getDamageableItems()) {
                                 if (item.getType() == i) {
@@ -328,6 +338,21 @@ public class AuctionCommand implements CommandExecutor {
                                     }
                                 }
                             }
+                        }
+
+                        VaultSupport vaultSupport = plugin.getSupport();
+                        int listCost = config.getInt("Settings.Auction-List-Fee", 0);
+
+                        if (vaultSupport.getMoney(player) >= listCost) {
+                            vaultSupport.removeMoney(player, listCost);
+                        } else {
+                            Map<String, String> placeholders = new HashMap<>(){{
+                                put("%Money_Needed%", String.valueOf(listCost));
+                                put("%money_needed%", String.valueOf(listCost));
+                            }};
+
+                            player.sendMessage(Messages.NEED_MORE_MONEY.getMessage(sender, placeholders));
+                            return true;
                         }
 
                         /*if (!allowBook(item)) {
