@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang3.compare.ComparableUtils.is;
-
 public class Methods {
 
     private final static CrazyAuctions plugin = CrazyAuctions.get();
@@ -284,7 +282,13 @@ public class Methods {
 
                     for (; data.contains("OutOfTime/Cancelled." + num); num++) ;
 
-                    if (data.getBoolean("Items." + i + ".Biddable") && !data.getString("Items." + i + ".TopBidder").equalsIgnoreCase("None") && is(plugin.getSupport().getMoney(getPlayer(data.getString("Items." + i + ".TopBidder")))).greaterThanOrEqualTo(new BigDecimal(data.getString("Items." + i + ".Price")))) {
+                    if (data.getBoolean("Items." + i + ".Biddable")
+                            && !data.getString("Items." + i + ".TopBidder").equalsIgnoreCase("None")
+                            && (
+                                plugin.getSupport().getMoney(getPlayer(data.getString("Items." + i + ".TopBidder")))
+                                        .compareTo(new BigDecimal(data.getString("Items." + i + ".Price")))
+                            )
+                            >= 0) {
                         String winner = data.getString("Items." + i + ".TopBidder");
                         String seller = data.getString("Items." + i + ".Seller");
                         BigDecimal price = new BigDecimal(data.getLong("Items." + i + ".Price"));
@@ -347,7 +351,7 @@ public class Methods {
     }
     
     public static String getPrice(String ID, Boolean Expired) {
-        BigDecimal price = new BigDecimal(0);
+        BigDecimal price = BigDecimal.ZERO;
 
         FileConfiguration configuration = Files.data.getConfiguration();
 

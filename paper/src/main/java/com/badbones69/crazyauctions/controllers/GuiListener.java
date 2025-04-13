@@ -31,8 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.apache.commons.lang3.compare.ComparableUtils.is;
-
 public class GuiListener implements Listener {
 
     private static final CrazyAuctions plugin = CrazyAuctions.get();
@@ -66,60 +64,57 @@ public class GuiListener implements Listener {
         }
 
         if (data.contains("Items")) {
-            for (String i : Objects.requireNonNull(data.getConfigurationSection("Items")).getKeys(false)) {
+            for (String i : data.getConfigurationSection("Items").getKeys(false)) {
                 ItemBuilder itemBuilder = ItemBuilder.convertItemStack(data.getString("Items." + i + ".Item"));
 
                 List<String> lore = new ArrayList<>(itemBuilder.getUpdatedLore());
 
-                if (data.contains("Items." + i + ".Item")) {
-                    assert cat != null;
-                    if (cat.getItems().contains(itemBuilder.getItemStack().getType()) || cat == Category.NONE) {
-                        if (data.getBoolean("Items." + i + ".Biddable")) {
-                            if (sell == ShopType.BID) {
-                                String sellerName = data.getString("Items." + i + ".SellerName");
+                if (itemBuilder != null && data.contains("Items." + i + ".Item") && (cat.getItems().contains(itemBuilder.getItemStack().getType()) || cat == Category.NONE)) {
+                    if (data.getBoolean("Items." + i + ".Biddable")) {
+                        if (sell == ShopType.BID) {
+                            String sellerName = data.getString("Items." + i + ".SellerName");
 
-                                String price = Methods.getPrice(i, false);
-                                String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
+                            String price = Methods.getPrice(i, false);
+                            String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
 
-                                String topBidderName = data.getString("Items." + i + ".TopBidderName");
+                            String topBidderName = data.getString("Items." + i + ".TopBidderName");
 
-                                for (String key : config.getStringList("Settings.GUISettings.Bidding")) {
-                                    String line = key.replace("%TopBid%", price).replace("%topbid%", price);
+                            for (String key : config.getStringList("Settings.GUISettings.Bidding")) {
+                                String line = key.replace("%TopBid%", price).replace("%topbid%", price);
 
-                                    line = sellerName != null ? line.replace("%Seller%", sellerName).replace("%seller%", sellerName) : line.replace("%Seller%", "N/A").replace("%seller%", "N/A");
+                                line = sellerName != null ? line.replace("%Seller%", sellerName).replace("%seller%", sellerName) : line.replace("%Seller%", "N/A").replace("%seller%", "N/A");
 
-                                    line = topBidderName != null ? line.replace("%TopBidder%", topBidderName).replace("%topbidder%", topBidderName) : line.replace("%TopBidder%", "N/A").replace("%topbidder%", "N/A");
+                                line = topBidderName != null ? line.replace("%TopBidder%", topBidderName).replace("%topbidder%", topBidderName) : line.replace("%TopBidder%", "N/A").replace("%topbidder%", "N/A");
 
-                                    lore.add(line.replace("%Time%", time).replace("%time%", time));
-                                }
-
-                                itemBuilder.setLore(lore);
-
-                                items.add(itemBuilder.build());
-
-                                ID.add(data.getInt("Items." + i + ".StoreID"));
+                                lore.add(line.replace("%Time%", time).replace("%time%", time));
                             }
-                        } else {
-                            if (sell == ShopType.SELL) {
-                                String sellerName = data.getString("Items." + i + ".SellerName");
 
-                                String price = Methods.getPrice(i, false);
-                                String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
+                            itemBuilder.setLore(lore);
 
-                                String format = String.format(Locale.ENGLISH, "%s", new BigDecimal(price));
+                            items.add(itemBuilder.build());
 
-                                for (String l : config.getStringList("Settings.GUISettings.SellingItemLore")) {
-                                    lore.add(l.replace("%Price%", format).replace("%price%", format)
-                                            .replace("%Seller%", sellerName != null ? sellerName : "N/A").replace("%seller%", sellerName != null ? sellerName : "N/A")
-                                            .replace("%Time%", time).replace("%time%", time));
-                                }
+                            ID.add(data.getInt("Items." + i + ".StoreID"));
+                        }
+                    } else {
+                        if (sell == ShopType.SELL) {
+                            String sellerName = data.getString("Items." + i + ".SellerName");
 
-                                itemBuilder.setLore(lore);
+                            String price = Methods.getPrice(i, false);
+                            String time = Methods.convertToTime(data.getLong("Items." + i + ".Time-Till-Expire"));
 
-                                items.add(itemBuilder.build());
+                            String format = String.format(Locale.ENGLISH, "%.9f", new BigDecimal(price));
 
-                                ID.add(data.getInt("Items." + i + ".StoreID"));
+                            for (String l : config.getStringList("Settings.GUISettings.SellingItemLore")) {
+                                lore.add(l.replace("%Price%", format).replace("%price%", format)
+                                        .replace("%Seller%", sellerName != null ? sellerName : "N/A").replace("%seller%", sellerName != null ? sellerName : "N/A")
+                                        .replace("%Time%", time).replace("%time%", time));
                             }
+
+                            itemBuilder.setLore(lore);
+
+                            items.add(itemBuilder.build());
+
+                            ID.add(data.getInt("Items." + i + ".StoreID"));
                         }
                     }
                 }
@@ -495,7 +490,7 @@ public class GuiListener implements Listener {
 
         Inventory inv = new AuctionMenu(27, Methods.color(config.getString("Settings.Bidding-On-Item"))).getInventory();
 
-        if (!bidding.containsKey(player.getUniqueId())) bidding.put(player.getUniqueId(), new BigDecimal(0));
+        if (!bidding.containsKey(player.getUniqueId())) bidding.put(player.getUniqueId(), BigDecimal.ZERO);
 
         inv.setItem(9, new ItemBuilder().setMaterial(Material.LIME_STAINED_GLASS_PANE).setName("&a+1").setAmount(1).build());
         inv.setItem(10, new ItemBuilder().setMaterial(Material.LIME_STAINED_GLASS_PANE).setName("&a+10").setAmount(1).build());
@@ -789,7 +784,7 @@ public class GuiListener implements Listener {
                                     BigDecimal bid = bidding.get(player.getUniqueId());
                                     String topBidder = data.getString("Items." + ID + ".TopBidder");
 
-                                    if (is(plugin.getSupport().getMoney(player)).lessThan(bid)) {
+                                    if (plugin.getSupport().getMoney(player).compareTo(bid) < 0) {
                                         Map<String, String> placeholders = new HashMap<>();
 
                                         placeholders.put("%Money_Needed%", (bid.subtract(plugin.getSupport().getMoney(player))) + "");
@@ -800,14 +795,14 @@ public class GuiListener implements Listener {
                                         return;
                                     }
 
-                                    if (is(new BigDecimal(data.getString("Items." + ID + ".Price"))).greaterThan(bid)) {
+                                    if ((new BigDecimal(data.getString("Items." + ID + ".Price"))).compareTo(bid) > 0) {
                                         player.sendMessage(Messages.BID_MORE_MONEY.getMessage(player));
 
                                         return;
                                     }
 
-//                                    if (new BigDecimal(data.getString("Items." + ID + ".Price")) >= bid && !topBidder.equalsIgnoreCase("None")) {
-                                    if (is(new BigDecimal(data.getString("Items." + ID + ".Price"))).greaterThanOrEqualTo(bid) && !topBidder.equalsIgnoreCase("None")) {
+                                    if ((new BigDecimal(data.getString("Items." + ID + ".Price"))).compareTo(bid) >= 0
+                                            && !topBidder.equalsIgnoreCase("None")) {
                                         player.sendMessage(Messages.BID_MORE_MONEY.getMessage(player));
 
                                         return;
@@ -826,7 +821,7 @@ public class GuiListener implements Listener {
 
                                     Files.data.save();
 
-                                    bidding.put(player.getUniqueId(), new BigDecimal(0));
+                                    bidding.put(player.getUniqueId(), BigDecimal.ZERO);
                                     player.closeInventory();
                                     playClick(player);
                                     return;
@@ -845,8 +840,7 @@ public class GuiListener implements Listener {
                                 for (String price : priceEdits.keySet()) {
                                     if (item.getItemMeta().getDisplayName().equals(Methods.color(price))) {
                                         try {
-//                                            bidding.put(player.getUniqueId(), (bidding.get(player.getUniqueId()) + priceEdits.get(price)));
-                                            bidding.put(player.getUniqueId(), ((bidding.get(player.getUniqueId())).add(priceEdits.get(price))));
+                                            bidding.put(player.getUniqueId(), (bidding.get(player.getUniqueId())).add(priceEdits.get(price)));
 
                                             inv.setItem(4, getBiddingItem(biddingID.get(player.getUniqueId())));
 
@@ -1049,7 +1043,7 @@ public class GuiListener implements Listener {
 
                                                 BigDecimal cost = new BigDecimal(data.getString("Items." + i + ".Price"));
 
-                                                if (is(plugin.getSupport().getMoney(player)).lessThan(cost)) {
+                                                if (plugin.getSupport().getMoney(player).compareTo(cost) < 0) {
                                                     String itemName = config.getString("Settings.GUISettings.OtherSettings.Cant-Afford.Item");
                                                     String name = config.getString("Settings.GUISettings.OtherSettings.Cant-Afford.Name");
 
@@ -1166,13 +1160,13 @@ public class GuiListener implements Listener {
 
                                     Map<String, String> placeholders = new HashMap<>();
 
-                                    if (is(support.getMoney(player)).lessThan(cost)) {
+                                    if (support.getMoney(player).compareTo(cost) < 0) {
                                         playClick(player);
 
                                         player.closeInventory();
 
-                                        placeholders.put("%Money_Needed%", (cost.subtract(plugin.getSupport().getMoney(player))) + "");
-                                        placeholders.put("%money_needed%", (cost.subtract(plugin.getSupport().getMoney(player))) + "");
+                                        placeholders.put("%Money_Needed%", cost.subtract(plugin.getSupport().getMoney(player)) + "");
+                                        placeholders.put("%money_needed%", cost.subtract(plugin.getSupport().getMoney(player)) + "");
 
                                         player.sendMessage(Messages.NEED_MORE_MONEY.getMessage(player, placeholders));
 
@@ -1188,8 +1182,8 @@ public class GuiListener implements Listener {
 
                                         player.closeInventory();
 
-                                        placeholders.put("%Money_Needed%", (cost.subtract(support.getMoney(player))) + "");
-                                        placeholders.put("%money_needed%", (cost.subtract(support.getMoney(player))) + "");
+                                        placeholders.put("%Money_Needed%", cost.subtract(support.getMoney(player)) + "");
+                                        placeholders.put("%money_needed%", cost.subtract(support.getMoney(player)) + "");
 
                                         player.sendMessage(Messages.NEED_MORE_MONEY.getMessage(player, placeholders));
 

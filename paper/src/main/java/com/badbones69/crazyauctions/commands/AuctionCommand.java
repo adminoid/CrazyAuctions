@@ -9,6 +9,7 @@ import com.badbones69.crazyauctions.api.events.AuctionListEvent;
 import com.badbones69.crazyauctions.controllers.GuiListener;
 import com.badbones69.crazyauctions.currency.VaultSupport;
 import com.ryderbelserion.vital.paper.api.files.FileManager;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -210,7 +211,7 @@ public class AuctionCommand implements CommandExecutor {
                             if (amount > item.getAmount()) amount = item.getAmount();
                         }
 
-                        if (!is(new BigDecimal(args[1])).greaterThanOrEqualTo(new BigDecimal(0))) {
+                        if (args[1].matches("\\d+(\\.0*)?")) {
                             Map<String, String> placeholders = new HashMap<>();
                             placeholders.put("%Arg%", args[1]);
                             placeholders.put("%arg%", args[1]);
@@ -229,24 +230,25 @@ public class AuctionCommand implements CommandExecutor {
                         BigDecimal price = new BigDecimal(args[1]);
 
                         if (args[0].equalsIgnoreCase("bid")) {
-                            if (is(price).lessThan(new BigDecimal(config.getString("Settings.Minimum-Bid-Price", "0.000000001")))) {
+                            if (price.compareTo(new BigDecimal(config.getString("Settings.Minimum-Bid-Price", "0.000000001"))) < 0) {
                                 player.sendMessage(Messages.BID_PRICE_TO_LOW.getMessage(sender));
 
                                 return true;
                             }
 
-                            if (is(price).greaterThan(new BigDecimal(config.getString("Settings.Max-Beginning-Bid-Price", "10000000")))) {
+                            if (price.compareTo(new BigDecimal(config.getString("Settings.Max-Beginning-Bid-Price", "1000000"))) > 0) {
                                 player.sendMessage(Messages.BID_PRICE_TO_HIGH.getMessage(sender));
 
                                 return true;
                             }
                         } else {
-                            if (is(price).lessThan(new BigDecimal(config.getString("Settings.Minimum-Sell-Price", "0.1")))) {
+                            if (price.compareTo(new BigDecimal(config.getString("Settings.Minimum-Sell-Price", "0.000000001"))) < 0) {
+
                                 player.sendMessage(Messages.SELL_PRICE_TO_LOW.getMessage(sender));
 
                                 return true;
                             }
-                            if (is(price).greaterThan(new BigDecimal(config.getString("Settings.Max-Beginning-Sell-Price", "10000000")))) {
+                            if (price.compareTo(new BigDecimal(config.getString("Settings.Max-Beginning-Sell-Price", "1000000"))) > 0) {
                                 player.sendMessage(Messages.SELL_PRICE_TO_HIGH.getMessage(sender));
 
                                 return true;
@@ -341,9 +343,9 @@ public class AuctionCommand implements CommandExecutor {
                         }
 
                         VaultSupport vaultSupport = plugin.getSupport();
-                        int listCost = config.getInt("Settings.Auction-List-Fee", 0);
+                        BigDecimal listCost = new BigDecimal(config.getString("Settings.Auction-List-Fee", "0"));
 
-                        if (vaultSupport.getMoney(player) >= listCost) {
+                        if (vaultSupport.getMoney(player).compareTo(listCost) >= 0) {
                             vaultSupport.removeMoney(player, listCost);
                         } else {
                             Map<String, String> placeholders = new HashMap<>(){{
